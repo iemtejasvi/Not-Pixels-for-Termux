@@ -62,6 +62,7 @@ Install these dependencies in Termux by running:
 pip install requests
 pkg install python-pillow
 pip install colorama
+pkg install python libjpeg-turbo libpng zlib freetype
 ```
 
 Once these packages are installed, you’ll be ready to run the script.
