@@ -80,12 +80,21 @@ To interact with the **NotPixel** platform, you need your **authorization token*
 
 #### How to Retrieve API Data:
 
-1. Go to the **NotPixel** website and log into your account.
-2. Open the developer tools in your browser (press `F12` or `Ctrl + Shift + I`).
-3. Navigate to the **Network** tab and filter requests related to the NotPixel API.
-4. Find a request that contains the `Authorization` header.
-5. Copy the `Authorization` token and save it in a text file or provide it directly to the script when prompted.
 
+   1. Install the Telegram app on your PC (do **not** log in through a browser; use the web app).
+   2. Open Telegram, navigate to **Settings** > **Advanced** > **Experimental Settings**, and enable **Webview Inspecting**.
+   3. Search for "Not Pixels" in Telegram and ensure the account has a blue check mark, confirming it's official.
+   4. Open the official account and click on **Play Game** to start.
+   5. Press `Ctrl + Shift + J` to open the inspection console.
+   6. In the console, type `allow pasting` manually, then paste the following:
+      ```javascript
+      copy(Telegram.WebApp.initData)
+      ```
+      You should see "undefined," indicating you've successfully copied the data.
+   7. Paste this data into a Notepad or directly into the script.
+
+   For a more detailed guide, refer to this [video tutorial](https://youtu.be/K66LMX513n4?si=aR5o_VMaVnget6t_).
+   
 ### 5. Running the Script
 
 Once you have your **Authorization** token, you can run the script with:
