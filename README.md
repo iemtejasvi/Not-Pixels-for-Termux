@@ -1,6 +1,6 @@
 # Not-Pixels for Termux
 
-This Python script automates interactions with the **NotPixel** API, allowing users to manage accounts and proxies for painting pixels and claiming rewards on the NotPixel platform. The script is optimized for **Termux** on Android and **bash environments**, making it ideal for use on mobile devices or lightweight Linux systems.
+This Python script automates interactions with the **NotPixel** API, allowing users to manage accounts and proxies for painting pixels and claiming rewards on the NotPixel platform. The script is optimized for **Termux** on Android and other **bash environments**, making it ideal for use on mobile devices or lightweight Linux systems.
 
 ## Features
 
@@ -19,7 +19,7 @@ This Python script automates interactions with the **NotPixel** API, allowing us
 
 ### 1. Install Git and Python in Termux
 
-Before running the script, install **Git** and **Python** in Termux. Use the following commands to install the necessary packages:
+Before running the script, you need to install **Git** and **Python** in Termux. Use the following commands to install the necessary packages:
 
 #### Update and Upgrade Termux:
 
@@ -48,31 +48,23 @@ git clone https://github.com/iemtejasvi/Not-Pixels-for-Termux.git
 cd Not-Pixels-for-Termux
 ```
 
-### 3. Install Required Python Packages
+### 3. Install Required Python Packages Manually
 
-#### a. Using `requirements.txt`:
-
-If a `requirements.txt` file exists, you can install all dependencies using:
-
-```bash
-pip install -r requirements.txt
-```
-
-#### b. Manually Installing Dependencies:
-
-If there is no `requirements.txt`, install the required libraries manually:
+Since there’s no `requirements.txt` file, you’ll need to manually install the required Python libraries. Use the following commands to install them:
 
 - **Requests**: For handling HTTP requests.
 - **Pillow**: For image processing.
+- **Colorama**: For terminal text coloring.
 
-Run the following commands:
+Install these dependencies in Termux by running:
 
 ```bash
 pip install requests
 pip install pillow
+pip install colorama
 ```
 
-Once dependencies are installed, you're ready to run the script.
+Once these packages are installed, you’ll be ready to run the script.
 
 ### 4. Retrieve API Data
 
@@ -80,21 +72,20 @@ To interact with the **NotPixel** platform, you need your **authorization token*
 
 #### How to Retrieve API Data:
 
+1. Install the Telegram app on your PC (do **not** log in through a browser; use the web app).
+2. Open Telegram, navigate to **Settings** > **Advanced** > **Experimental Settings**, and enable **Webview Inspecting**.
+3. Search for "Not Pixels" in Telegram and ensure the account has a blue check mark, confirming it's official.
+4. Open the official account and click on **Play Game** to start.
+5. Press `Ctrl + Shift + J` to open the inspection console.
+6. In the console, type `allow pasting` manually, then paste the following:
+   ```javascript
+   copy(Telegram.WebApp.initData)
+   ```
+   You should see "undefined," indicating you've successfully copied the data.
+7. Paste this data into a Notepad or directly into the script.
 
-   1. Install the Telegram app on your PC (do **not** log in through a browser; use the web app).
-   2. Open Telegram, navigate to **Settings** > **Advanced** > **Experimental Settings**, and enable **Webview Inspecting**.
-   3. Search for "Not Pixels" in Telegram and ensure the account has a blue check mark, confirming it's official.
-   4. Open the official account and click on **Play Game** to start.
-   5. Press `Ctrl + Shift + J` to open the inspection console.
-   6. In the console, type `allow pasting` manually, then paste the following:
-      ```javascript
-      copy(Telegram.WebApp.initData)
-      ```
-      You should see "undefined," indicating you've successfully copied the data.
-   7. Paste this data into a Notepad or directly into the script.
+For a more detailed guide, refer to this [video tutorial](https://youtu.be/K66LMX513n4?si=aR5o_VMaVnget6t_).
 
-   For a more detailed guide, refer to this [video tutorial](https://youtu.be/K66LMX513n4?si=aR5o_VMaVnget6t_).
-   
 ### 5. Running the Script
 
 Once you have your **Authorization** token, you can run the script with:
@@ -134,7 +125,7 @@ pkg install tmux
 
 ```bash
 tmux new -s notpixel
-python notpixel.py
+python main.py
 ```
 
 To **detach** from the session without stopping the script, press:
@@ -154,3 +145,4 @@ tmux attach -t notpixel
 ## Conclusion
 
 The **Not-Pixels for Termux** script is a lightweight, mobile-friendly automation tool designed for seamless interaction with the NotPixel platform. It can be run efficiently on Android devices or lightweight Linux systems, making it ideal for long-term automation tasks.
+
