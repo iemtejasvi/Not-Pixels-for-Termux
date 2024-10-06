@@ -157,6 +157,17 @@ def load_proxy_from_file(filename=proxy_file):
     
     return random.choice(proxies)
 
+def extract_username_from_initdata(init_data):
+    decoded_data = urllib.parse.unquote(init_data)
+    username_start = decoded_data.find('"username":"') + len('"username":"')
+    username_end = decoded_data.find('"', username_start)
+
+    if username_start != -1 and username_end != -1:
+        return decoded_data[username_start:username_end]
+
+    return "Unknown"
+
+
 proxy = load_proxy_from_file()
 
 def get_session_with_proxy_and_retries(proxy, retries=3, backoff_factor=0.3, status_forcelist=(500, 502, 504)):
