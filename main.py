@@ -1,4 +1,4 @@
-import PIL
+#import PIL
 import requests
 import json
 import time
