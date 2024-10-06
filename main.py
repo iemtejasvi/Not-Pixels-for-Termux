@@ -10,9 +10,10 @@ from requests.packages.urllib3.util.retry import Retry
 import urllib.parse
 import os
 
-# Initialize Colorama for terminal colors
+# Initialize Colorama for text coloring
 init(autoreset=True)
 
+# Global settings and URLs
 url = "https://notpx.app/api/v1"
 WAIT = 180 * 3
 DELAY = 1
@@ -33,8 +34,9 @@ def display_telegram_info():
 
 # Clear terminal
 def clear_terminal():
-    os.system('clear')  # Works in Termux (Unix-like environments)
+    os.system('clear')  # This works in Termux and Linux
 
+# Dummy image pattern for painting pixels
 def get(path):
     space = ' '
     hash_sym = '#'
@@ -63,8 +65,9 @@ def get(path):
         [space] * 19
     ]
 
-image = get("")
+image = get("")  # Example pattern
 
+# Color mapping
 c = {
     '#': "#000000",
     '.': "#3690EA",
@@ -157,17 +160,6 @@ def load_proxy_from_file(filename=proxy_file):
     
     return random.choice(proxies)
 
-def extract_username_from_initdata(init_data):
-    decoded_data = urllib.parse.unquote(init_data)
-    username_start = decoded_data.find('"username":"') + len('"username":"')
-    username_end = decoded_data.find('"', username_start)
-
-    if username_start != -1 and username_end != -1:
-        return decoded_data[username_start:username_end]
-
-    return "Unknown"
-
-
 proxy = load_proxy_from_file()
 
 def get_session_with_proxy_and_retries(proxy, retries=3, backoff_factor=0.3, status_forcelist=(500, 502, 504)):
@@ -202,10 +194,10 @@ def get_color(pixel, header):
     except requests.exceptions.Timeout:
         log_message("Request timeout.", Fore.RED)
         return "#000000"
-    except requests.exceptions.ConnectionError as e:
+    except requests.exceptions.ConnectionError:
         log_message("Connection error.", Fore.RED)
         return "#000000"
-    except requests.exceptions.RequestException as e:
+    except requests.exceptions.RequestException:
         log_message("Request failed.", Fore.RED)
         return "#000000"
 
@@ -213,7 +205,7 @@ def claim(header):
     log_message("Claiming...", Fore.CYAN)
     try:
         session.get(f"{url}/mining/claim", headers=header, timeout=10)
-    except requests.exceptions.RequestException as e:
+    except requests.exceptions.RequestException:
         log_message("Claim request failed.", Fore.RED)
 
 def get_pixel(x, y):
@@ -232,16 +224,26 @@ def paint(canvas_pos, color, header):
         x, y = get_pos(canvas_pos, 1000)
 
         if response.status_code == 400:
-            log_message("No energy left.", Fore.RED)
+            log_message("Out of energy.", Fore.RED)
             return False
         if response.status_code == 401:
             return -1
 
-        log_message(f"Painted at {x},{y}.", Fore.GREEN)
+        log_message(f"Pixel painted at {x},{y}.", Fore.GREEN)
         return True
-    except requests.exceptions.RequestException as e:
+    except requests.exceptions.RequestException:
         log_message("Painting failed.", Fore.RED)
         return False
+
+def extract_username_from_initdata(init_data):
+    decoded_data = urllib.parse.unquote(init_data)
+    username_start = decoded_data.find('"username":"') + len('"username":"')
+    username_end = decoded_data.find('"', username_start)
+    
+    if username_start != -1 and username_end != -1:
+        return decoded_data[username_start:username_end]
+    
+    return "Unknown"
 
 def fetch_mining_data(header):
     try:
@@ -252,14 +254,52 @@ def fetch_mining_data(header):
             log_message(f"Balance: {user_balance}", Fore.MAGENTA)
         else:
             log_message("Failed to fetch mining data.", Fore.RED)
-    except requests.exceptions.RequestException as e:
+    except requests.exceptions.RequestException:
         log_message("Mining data request failed.", Fore.RED)
+
+def main(auth, account):
+    headers = {'authorization': auth}
+    try:
+        fetch_mining_data(headers)
+        claim(headers)
+
+        size = len(image) * len(image[0])
+        order = [i for i in range(size)]
+        random.shuffle(order)
+
+        for pos_image in order:
+            x, y = get_pos(pos_image, len(image[0]))
+            time.sleep(0.05 + random.uniform(0.01, 0.1))
+            try:
+                color = get_color(get_canvas_pos(x, y), headers)
+                if color == -1:
+                    log_message("Authorization failed.", Fore.RED)
+                    print(headers["authorization"])
+                    break
+                if image[y][x] == ' ' or color == c[image[y][x]]:
+                    log_message(f"Skipped {start_x + x - 1},{start_y + y - 1}.", Fore.RED)
+                    continue
+
+                result = paint(get_canvas_pos(x, y), c[image[y][x]], headers)
+                if result == -1:
+                    log_message("Authorization dead.", Fore.RED)
+                    print(headers["authorization"])
+                    break
+                elif result:
+                    continue
+                else:
+                    break
+
+            except IndexError:
+                log_message("Missed a pixel.", Fore.RED)
+    except requests.exceptions.RequestException:
+        log_message(f"Could not connect for {account}.", Fore.RED)
 
 def process_accounts(accounts):
     first_account_start_time = datetime.now()
     for account in accounts:
         username = extract_username_from_initdata(account)
-        log_message(f"Starting for {username}.", Fore.BLUE)
+        log_message(f"Processing account {username}.", Fore.BLUE)
         main(account, account)
 
     time_elapsed = datetime.now() - first_account_start_time
@@ -269,7 +309,7 @@ def process_accounts(accounts):
         log_message(f"Waiting {int(time_to_wait.total_seconds() // 60)} minutes.", Fore.YELLOW)
         time.sleep(time_to_wait.total_seconds())
     else:
-        log_message("No wait needed.", Fore.YELLOW)
+        log_message("No need to wait.", Fore.YELLOW)
 
 # Menu
 def menu():
@@ -278,7 +318,7 @@ def menu():
         display_telegram_info()
         
         print(Fore.GREEN + "╔══════════════════════════════════════╗")
-        print(Fore.GREEN + "║            Main Menu                 ║")
+        print(Fore.GREEN + "║           Main Menu                  ║")
         print(Fore.GREEN + "╠══════════════════════════════════════╣")
         print(Fore.GREEN + "║ 1. Add Account                       ║")
         print(Fore.GREEN + "║ 2. View Accounts                     ║")
