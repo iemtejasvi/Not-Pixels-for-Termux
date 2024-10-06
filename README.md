@@ -60,7 +60,7 @@ Install these dependencies in Termux by running:
 
 ```bash
 pip install requests
-pip install pillow
+pkg install python-pillow
 pip install colorama
 ```
 
