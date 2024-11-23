@@ -1,3 +1,5 @@
+# No longer maintained/halted
+
 # Not-Pixels for Termux
 
 This Python script automates interactions with the **NotPixel** API, allowing users to manage accounts and proxies for painting pixels and claiming rewards on the NotPixel platform. The script is optimized for **Termux** on Android and other **bash environments**, making it ideal for use on mobile devices or lightweight Linux systems.
